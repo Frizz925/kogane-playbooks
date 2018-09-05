@@ -1,0 +1,22 @@
+---
+- name: Setup tools
+  vars_prompt:
+    - name: username
+      prompt: "New username"
+      private: no
+    - name: password
+      prompt: "New password"
+      private: yes
+      confirm: yes
+      encrypt: 'sha512_crypt'
+    - name: pubkey_path
+      prompt: "SSH public key path"
+      private: no
+      default: ~/.ssh/id_rsa.pub
+  roles:
+    - packages
+    - user
+    - ssh
+  hosts: kogane-vpn
+  become: yes
+...

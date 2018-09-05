@@ -1,0 +1,13 @@
+- name: Add new user
+  user:
+    name: "{{ username }}"
+    groups:
+      - sudo
+    password: "{{ password }}"
+- name: Allow password-less sudo
+  replace:
+    path: /etc/sudoers
+    regexp: '^%sudo.+$'
+    replace: '%sudo ALL=(ALL:NOPASSWD) ALL'
+    backup: yes
+    validate: 'visudo -cf %s'
