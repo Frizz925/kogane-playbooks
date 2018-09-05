@@ -1,13 +1,23 @@
+- name: Set facts
+  set_fact:
+    home_dir: '/home/{{ username }}'
 - name: Add new user
   user:
     name: "{{ username }}"
     groups:
       - sudo
     password: "{{ password }}"
+    shell: /usr/bin/zsh
 - name: Allow password-less sudo
   replace:
     path: /etc/sudoers
     regexp: '^%sudo.+$'
-    replace: '%sudo ALL=(ALL:NOPASSWD) ALL'
+    replace: '%sudo ALL=(ALL) NOPASSWD:ALL'
     backup: yes
     validate: 'visudo -cf %s'
+- name: Pull oh-my-zsh
+  git:
+    repo: 'https://github.com/robbyrussell/oh-my-zsh.git'
+    dest: '{{ home_dir }}/.oh-my-zsh'
+- name: Copy template
+  shell: 'cp {{ home_dir }}/.oh-my-zsh/templates/zshrc.zsh-template {{ home_dir }}/.zshrc'
