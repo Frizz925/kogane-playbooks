@@ -13,10 +13,21 @@
       prompt: "SSH public key path"
       private: no
       default: ~/.ssh/id_rsa.pub
+    - name: proxy_username
+      prompt: "Proxy username"
+      private: no
+    - name: proxy_password
+      prompt: "Proxy password"
+      confirm: yes
+      private: yes
+    - name: proxy_port
+      prompt: "Proxy port"
+      default: 3128
   roles:
     - packages
     - user
     - ssh
+    - proxy
   hosts: kogane-vpn
   become: yes
 ...

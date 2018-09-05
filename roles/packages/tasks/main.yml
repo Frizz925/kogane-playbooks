@@ -5,4 +5,10 @@
       - wget
       - git
       - curl
+      - python
+      - python-pip
+      - python-virtualenv
+      - python-passlib
     state: latest
+    update_cache: true
+    cache_valid_time: 86400

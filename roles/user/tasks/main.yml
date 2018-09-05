@@ -19,5 +19,7 @@
   git:
     repo: 'https://github.com/robbyrussell/oh-my-zsh.git'
     dest: '{{ home_dir }}/.oh-my-zsh'
-- name: Copy template
-  shell: 'cp {{ home_dir }}/.oh-my-zsh/templates/zshrc.zsh-template {{ home_dir }}/.zshrc'
+- name: Copy config
+  copy:
+    src: .zshrc
+    dest: '{{ home_dir }}/.zshrc'
