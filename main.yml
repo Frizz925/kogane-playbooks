@@ -20,14 +20,14 @@
       prompt: "Proxy password"
       confirm: yes
       private: yes
-    - name: proxy_port
-      prompt: "Proxy port"
-      default: 3128
+    - name: proxy_ports
+      prompt: "Proxy ports (comma separated)"
+      default: 80,3128
   roles:
     - packages
     - user
     - ssh
     - proxy
-  hosts: kogane-vpn
+  hosts: kogane
   become: yes
 ...
