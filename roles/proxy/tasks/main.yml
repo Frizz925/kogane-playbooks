@@ -1,0 +1,36 @@
+---
+- block:
+    - name: Install Squid proxy
+      apt:
+        name: squid
+        state: latest
+        update_cache: yes
+        cache_valid_time: 86400
+    - name: Copy configuration
+      template:
+        src: squid.conf.j2
+        dest: /etc/squid/squid.conf
+        owner: root
+        group: root
+        mode: 0600
+    - name: Remove passwords file
+      file:
+        path: /etc/squid/passwords
+        state: absent
+    - name: Generate passwords file
+      htpasswd:
+        path: /etc/squid/passwords
+        name: "{{ proxy_username }}"
+        password: "{{ proxy_password }}"
+        owner: proxy
+        group: proxy
+        mode: 0600
+    - name: Reload squid proxy
+      service:
+        name: squid
+        state: reloaded
+    - name: Apply iptables rules
+      shell: "iptables -A INPUT -p tcp -m multiport -m conntrack --dports {{ proxy_ports }} --ctstate NEW -j ACCEPT"
+    - name: Save iptables
+      shell: iptables-save > /etc/iptables/rules.v4
+...

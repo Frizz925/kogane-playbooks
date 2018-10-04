@@ -1,0 +1,7 @@
+auth_param basic program /usr/lib/squid/basic_ncsa_auth /etc/squid/passwords
+acl authenticated proxy_auth REQUIRED
+http_access allow authenticated
+http_access deny all
+{% for port in proxy_ports.split(',') %}
+http_port 0.0.0.0:{{ port }}
+{% endfor %}
