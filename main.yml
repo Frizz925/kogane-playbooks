@@ -22,7 +22,7 @@
       private: yes
     - name: proxy_ports
       prompt: "Proxy ports (comma separated)"
-      default: 80,3128
+      default: 80,443,3128
   roles:
     - packages
     - user
