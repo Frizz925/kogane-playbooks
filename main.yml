@@ -1,0 +1,34 @@
+- name: Provision for Kogane servers
+  hosts: localhost
+  gather_facts: no
+  vars_files:
+    - config.cfg
+  tasks:
+    - debug: var=proxy_username
+    - name: Ask proxy credentials
+      pause:
+        prompt: "{{ item.prompt }}"
+      register: prompt_result
+      when: lookup('vars', item.name, default='') == ''
+      loop:
+        - { name: "proxy_username", title: "proxy username", prompt: "Proxy username "}
+        - { name: "proxy_password", title: "proxy password", prompt: "Proxy password "}
+    - name: Set fact for proxy credentials
+      set_fact: {"{{ result.item.name }}": "{{ result.user_input }}"}
+      loop: "{{ prompt_result.results }}"
+      loop_control:
+        loop_var: result
+      when: prompt_result is defined and result.user_input is defined
+- name: Setup Kogane servers
+  hosts: kogane
+  vars_files:
+    - config.cfg
+  pre_tasks:
+    - name: Set facts from localhost
+      set_fact: {"{{ item }}": "{{ hostvars['localhost'][item] }}"}
+      when: hostvars['localhost'][item] is defined
+      loop:
+        - proxy_username
+        - proxy_password
+  roles:
+    - squid

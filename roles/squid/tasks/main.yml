@@ -1,0 +1,34 @@
+- block:
+  - name: Install required packages
+    apt:
+      name:
+        - squid
+        - iptables-persistent
+        - python-passlib
+      state: latest
+      update_cache: yes
+      cache_valid_time: 86400
+  - name: Creating Squid configuration
+    copy:
+      src: squid.conf
+      dest: /etc/squid/squid.conf
+      owner: root
+      group: root
+      mode: 0600
+  - name: Make sure password file is absent
+    file:
+      path: /etc/squid/passwd
+      state: absent
+  - name: Generate password file
+    htpasswd:
+      path: /etc/squid/passwd
+      name: "{{ proxy_username }}"
+      password: "{{ proxy_password }}"
+      owner: proxy
+      group: proxy
+      mode: 0600
+  - name: Reload squid proxy
+    service:
+      name: squid
+      state: reloaded
+  become: yes
