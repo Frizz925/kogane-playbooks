@@ -1,5 +1,5 @@
 - block:
-  - name: Install required packages
+  - name: Installing required packages
     apt:
       name:
         - squid
@@ -15,11 +15,13 @@
       owner: root
       group: root
       mode: 0600
-  - name: Make sure password file is absent
+    notify:
+      - restart squid
+  - name: Making sure password file is absent
     file:
       path: /etc/squid/passwd
       state: absent
-  - name: Generate password file
+  - name: Generating password file
     htpasswd:
       path: /etc/squid/passwd
       name: "{{ proxy_username }}"
@@ -27,8 +29,8 @@
       owner: proxy
       group: proxy
       mode: 0600
-  - name: Reload squid proxy
-    service:
-      name: squid
-      state: reloaded
+    notify:
+      - restart squid
   become: yes
+  tags:
+    - squid
