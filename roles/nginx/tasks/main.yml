@@ -1,0 +1,28 @@
+- block:
+  - name: Installing required packages
+    apt:
+      name:
+        - nginx
+        - openssl
+        - rng-tools
+      state: latest
+      update_cache: yes
+      cache_valid_time: 86400
+  - name: Creating dhparam
+    shell: openssl dhparam -dsaparam -outform pem -out dhparam.pem 4096
+    args:
+      chdir: /etc/nginx
+      creates: /etc/nginx/dhparam.pem
+  - name: Creating nginx configuration
+    copy:
+      src: nginx.conf
+      dest: /etc/nginx/nginx.conf
+      owner: root
+      group: root
+      mode: 0644
+    notify:
+      - restart nginx
+  become: yes
+  tags:
+    - nginx
+
