@@ -1,0 +1,25 @@
+- block:
+  - name: Making sure certs directory exists
+    file:
+      path: /etc/certs
+      owner: root
+      group: root
+      mode: 0755
+      state: directory
+  - name: Copying certificate
+    copy:
+      src: certs/fullchain.pem
+      dest: /etc/certs/fullchain.pem
+      owner: root
+      group: root
+      mode: 0644
+  - name: Copying private key
+    copy:
+      src: certs/privkey.pem
+      dest: /etc/certs/privkey.pem
+      owner: root
+      group: root
+      mode: 0600
+  become: yes
+  tags:
+    - certs
