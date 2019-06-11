@@ -1,0 +1,57 @@
+- name: Installing software-properties-common
+  apt:
+    name: software-properties-common
+    state: latest
+    cache_valid_time: 86400
+- name: Adding certbot repository
+  apt_repository:
+    repo: 'ppa:certbot/certbot'
+    state: present
+- name: Installing certbot
+  apt:
+    name: certbot
+    state: latest
+    cache_valid_time: 86400
+- name: Installing certbot Cloudflare DNS plugin
+  apt:
+    name: python3-certbot-dns-cloudflare
+    state: latest
+    cache_valid_time: 86400
+- name: Creating Cloudflare credentials directory
+  file:
+    path: "{{ cloudflare_credentials_path | dirname }}"
+    state: directory
+    recurse: yes
+    owner: root
+    group: root
+- name: Copying Cloudflare credentials
+  copy:
+    src: cloudflare.ini
+    dest: "{{ cloudflare_credentials_path }}"
+    owner: root
+    group: root
+    mode: 0600
+- name: Issuing certificates
+  shell: >-
+    certbot certonly
+    --dns-cloudflare
+    --dns-cloudflare-credentials {{ cloudflare_credentials_path }}
+    --server https://acme-v02.api.letsencrypt.org/directory
+    --non-interactive
+    --email {{ letsencrypt_email }}
+    --agree-tos
+    -d *.kogane.moe
+    -d kogane.moe
+- name: Copying certificates
+  copy:
+    src: "/etc/letsencrypt/live/kogane.moe/{{ item }}"
+    dest: "/etc/certs/{{ item }}"
+    follow: yes
+    remote_src: yes
+  with_items:
+    - privkey.pem
+    - fullchain.pem
+- name: Restarting nginx
+  service:
+    name: nginx
+    state: restarted

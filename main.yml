@@ -1,0 +1,4 @@
+- hosts: kogane
+  roles:
+    - name: certbot
+      become: yes
